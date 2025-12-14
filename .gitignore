@@ -1,0 +1,31 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Logs
+logs/
+*.log
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Env / Secrets
+.env
+.env.*
+
+# Coverage / Build
+coverage/
+dist/
+build/
+
+# Misc
+*.tmp
+.tmp/

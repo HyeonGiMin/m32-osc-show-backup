@@ -1,0 +1,15 @@
+{
+  "name": "m32-osc-show-backup",
+  "version": "1.0.0",
+  "description": "Behringer M32/X32 show auto backup via OSC",
+  "main": "backup.js",
+  "scripts": {
+    "start": "node backup.js"
+  },
+  "keywords": ["m32", "x32", "osc", "backup", "behringer"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "osc": "^2.4.5"
+  }
+}
