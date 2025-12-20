@@ -1,0 +1,15 @@
+{
+  "name": "m32-scene-backup",
+  "version": "1.0.0",
+  "description": "Automatically backup M32/X32 console scenes to slots 80-99 with rolling rotation",
+  "main": "backup.js",
+  "scripts": {
+    "start": "node backup.js"
+  },
+  "keywords": ["m32", "x32", "osc", "scene", "backup"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "osc": "^2.4.5"
+  }
+}
