@@ -29,3 +29,7 @@ build/
 # Misc
 *.tmp
 .tmp/
+
+.X32res.rc
+X32.exe
+M32-Edit_PC_4.3 (2)/
