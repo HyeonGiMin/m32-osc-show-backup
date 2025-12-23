@@ -69,10 +69,44 @@ function sendOSC(address, args = []) {
     });
 }
 
+async function checkConsoleReachable(timeoutMs = 2000) {
+    return new Promise((resolve) => {
+        let finished = false;
+
+        const finish = (ok, reason) => {
+            if (finished) return;
+            finished = true;
+            clearTimeout(timer);
+            udpPort.removeListener("message", onMessage);
+            resolve({ ok, reason });
+        };
+
+        const onMessage = (oscMsg) => {
+            if (oscMsg.address === "/info") {
+                finish(true, "info");
+            }
+        };
+
+        const timer = setTimeout(() => finish(false, "timeout"), timeoutMs);
+        udpPort.on("message", onMessage);
+
+        sendOSC("/info").catch(() => finish(false, "send-error"));
+    });
+}
+
 async function main() {
     ensureDirs();
     log("=== M32 Scene 자동 백업 시작 ===");
     log(`TARGET ${M32_IP}:${M32_PORT}, SLOTS ${MIN_SLOT}-${MAX_SLOT}`);
+
+    const reachable = await checkConsoleReachable();
+    if (!reachable.ok) {
+        log("ERROR: 콘솔 응답 없음 (/info). IP/포트를 확인 후 재시도하세요.");
+        udpPort.close();
+        process.exit(1);
+        return;
+    }
+    log("콘솔 응답 확인: /info 수신");
 
     const indexData = loadIndex();
     const slot = indexData.currentSlot;
