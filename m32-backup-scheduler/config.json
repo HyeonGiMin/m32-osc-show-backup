@@ -1,0 +1,22 @@
+{
+    "m32": {
+        "ip": "192.168.0.2",
+        "port": 10023
+    },
+    "logging": {
+        "level": "info"
+    },
+    "sceneBackup": {
+        "slotRange": {
+            "start": 80,
+            "end": 99
+        }
+    },
+    "schedules": [
+        {
+            "name": "Daily Backup",
+            "enabled": true,
+            "cron": "0 2 * * *"
+        }
+    ]
+}

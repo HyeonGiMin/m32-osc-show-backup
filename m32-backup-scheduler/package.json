@@ -1,0 +1,26 @@
+{
+    "name": "m32-backup-scheduler",
+    "version": "1.0.0",
+    "description": "Schedule and automate M32/X32 console backups via OSC",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "keywords": [
+        "m32",
+        "x32",
+        "osc",
+        "scheduler",
+        "backup",
+        "automation"
+    ],
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+        "osc": "^2.4.5",
+        "node-cron": "^3.0.3",
+        "pino": "^9.4.0",
+        "pino-pretty": "^11.2.2",
+        "dotenv": "^16.4.5"
+    }
+}
