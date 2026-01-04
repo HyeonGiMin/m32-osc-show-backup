@@ -128,8 +128,14 @@ const FX_SLOT = {
     ON: "/fx/{fx}/on",
 };
 
+const FX_SOURCE = {
+    // Only FX 1-4 support L/R source selection
+    L: "/fx/{fx}/source/l",
+    R: "/fx/{fx}/source/r",
+};
+
 const FX_PARAMS = {
-    // /fx/{fx}/par/{01-16}
+    // /fx/{fx}/par/{01-64}
     BASE: "/fx/{fx}/par/{par}",
 };
 
@@ -152,15 +158,107 @@ const MATRIX = {
 // 6. MAIN (Stereo / Mono)
 // ============================================================================
 
-const MAIN_STEREO = {
-    FADER: "/main/st/mix/fader",
-    PAN: "/main/st/mix/pan",
-    ON: "/main/st/mix/on",
+const MAIN_STEREO_CONFIG = {
+    NAME: "/main/st/config/name",
+    ICON: "/main/st/config/icon",
+    COLOR: "/main/st/config/color",
 };
 
-const MAIN_MONO = {
-    FADER: "/main/m/mix/fader",
+const MAIN_STEREO_DYN = {
+    ON: "/main/st/dyn/on",
+    MODE: "/main/st/dyn/mode",
+    DET: "/main/st/dyn/det",
+    ENV: "/main/st/dyn/env",
+    THR: "/main/st/dyn/thr",
+    RATIO: "/main/st/dyn/ratio",
+    KNEE: "/main/st/dyn/knee",
+    MGAIN: "/main/st/dyn/mgain",
+    ATTACK: "/main/st/dyn/attack",
+    HOLD: "/main/st/dyn/hold",
+    RELEASE: "/main/st/dyn/release",
+    POS: "/main/st/dyn/pos",
+    MIX: "/main/st/dyn/mix",
+    AUTO: "/main/st/dyn/auto",
+};
+
+const MAIN_STEREO_DYN_FILTER = {
+    ON: "/main/st/dyn/filter/on",
+    TYPE: "/main/st/dyn/filter/type",
+    FREQ: "/main/st/dyn/filter/f",
+};
+
+const MAIN_STEREO_INSERT = {
+    ON: "/main/st/insert/on",
+    POS: "/main/st/insert/pos",
+    SEL: "/main/st/insert/sel",
+};
+
+const MAIN_STEREO_EQ = {
+    ON: "/main/st/eq/on",
+    BAND_TYPE: "/main/st/eq/{band}/type",
+    BAND_FREQ: "/main/st/eq/{band}/f",
+    BAND_GAIN: "/main/st/eq/{band}/g",
+    BAND_Q: "/main/st/eq/{band}/q",
+};
+
+const MAIN_STEREO_MIX = {
+    ON: "/main/st/mix/on",
+    FADER: "/main/st/mix/fader",
+    PAN: "/main/st/mix/pan",
+    SEND_ON: "/main/st/mix/{mtx}/on",
+    SEND_LEVEL: "/main/st/mix/{mtx}/level",
+    SEND_PAN: "/main/st/mix/{mtx}/pan",
+};
+
+const MAIN_MONO_CONFIG = {
+    NAME: "/main/m/config/name",
+    ICON: "/main/m/config/icon",
+    COLOR: "/main/m/config/color",
+};
+
+const MAIN_MONO_DYN = {
+    ON: "/main/m/dyn/on",
+    MODE: "/main/m/dyn/mode",
+    DET: "/main/m/dyn/det",
+    ENV: "/main/m/dyn/env",
+    THR: "/main/m/dyn/thr",
+    RATIO: "/main/m/dyn/ratio",
+    KNEE: "/main/m/dyn/knee",
+    MGAIN: "/main/m/dyn/mgain",
+    ATTACK: "/main/m/dyn/attack",
+    HOLD: "/main/m/dyn/hold",
+    RELEASE: "/main/m/dyn/release",
+    POS: "/main/m/dyn/pos",
+    MIX: "/main/m/dyn/mix",
+    AUTO: "/main/m/dyn/auto",
+};
+
+const MAIN_MONO_DYN_FILTER = {
+    ON: "/main/m/dyn/filter/on",
+    TYPE: "/main/m/dyn/filter/type",
+    FREQ: "/main/m/dyn/filter/f",
+};
+
+const MAIN_MONO_INSERT = {
+    ON: "/main/m/insert/on",
+    POS: "/main/m/insert/pos",
+    SEL: "/main/m/insert/sel",
+};
+
+const MAIN_MONO_EQ = {
+    ON: "/main/m/eq/on",
+    BAND_TYPE: "/main/m/eq/{band}/type",
+    BAND_FREQ: "/main/m/eq/{band}/f",
+    BAND_GAIN: "/main/m/eq/{band}/g",
+    BAND_Q: "/main/m/eq/{band}/q",
+};
+
+const MAIN_MONO_MIX = {
     ON: "/main/m/mix/on",
+    FADER: "/main/m/mix/fader",
+    SEND_ON: "/main/m/mix/{mtx}/on",
+    SEND_LEVEL: "/main/m/mix/{mtx}/level",
+    SEND_PAN: "/main/m/mix/{mtx}/pan",
 };
 
 // ============================================================================
@@ -170,6 +268,12 @@ const MAIN_MONO = {
 const DCA = {
     ON: "/dca/{dca}/on",
     FADER: "/dca/{dca}/fader",
+};
+
+const DCA_CONFIG = {
+    NAME: "/dca/{dca}/config/name",
+    ICON: "/dca/{dca}/config/icon",
+    COLOR: "/dca/{dca}/config/color",
 };
 
 // ============================================================================
@@ -190,6 +294,42 @@ const OUTPUT = {
     SOURCE: "/output/{out}/src",
     DELAY: "/output/{out}/delay",
     INVERT: "/output/{out}/invert",
+};
+
+const OUTPUT_MAIN = {
+    SRC: "/outputs/main/{out}/src",
+    POS: "/outputs/main/{out}/pos",
+    INVERT: "/outputs/main/{out}/invert",
+    DELAY_ON: "/outputs/main/{out}/delay/on",
+    DELAY_TIME: "/outputs/main/{out}/delay/time",
+};
+
+const OUTPUT_AUX = {
+    SRC: "/outputs/aux/{out}/src",
+    POS: "/outputs/aux/{out}/pos",
+    INVERT: "/outputs/aux/{out}/invert",
+};
+
+const OUTPUT_P16 = {
+    SRC: "/outputs/p16/{out}/src",
+    POS: "/outputs/p16/{out}/pos",
+    INVERT: "/outputs/p16/{out}/invert",
+    IQ_GROUP: "/outputs/p16/{out}/iQ/group",
+    IQ_SPEAKER: "/outputs/p16/{out}/iQ/speaker",
+    IQ_EQ: "/outputs/p16/{out}/iQ/eq",
+    IQ_MODEL: "/outputs/p16/{out}/iQ/model",
+};
+
+const OUTPUT_AES = {
+    SRC: "/outputs/aes/{out}/src",
+    POS: "/outputs/aes/{out}/pos",
+    INVERT: "/outputs/aes/{out}/invert",
+};
+
+const OUTPUT_REC = {
+    SRC: "/outputs/rec/{out}/src",
+    POS: "/outputs/rec/{out}/pos",
+    INVERT: "/outputs/rec/{out}/invert",
 };
 
 // ============================================================================
@@ -243,6 +383,309 @@ const SUBSCRIBE = {
     BASIC: "/subscribe",
     FORMAT: "/formatsubscribe",
     BATCH: "/batchsubscribe",
+    UNSUBSCRIBE: "/unsubscribe",
+};
+
+// ============================================================================
+// 14. SHOW / CUE / SCENE / SNIPPET / PRESETS
+// ============================================================================
+
+const SHOW = {
+    DUMP: "/showdump",
+    PREPOS_CURRENT: "/-show/prepos/current",
+    NAME: "/-show/showfile/show/name",
+    SHOW_INPUTS_SAFE: "/-show/showfile/show/inputs",
+    SHOW_MXSENDS_SAFE: "/-show/showfile/show/mxsends",
+    SHOW_MXBUSES_SAFE: "/-show/showfile/show/mxbuses",
+    SHOW_CONSOLE_SAFE: "/-show/showfile/show/console",
+    SHOW_CHAN16_SAFE: "/-show/showfile/show/chan16",
+    SHOW_CHAN32_SAFE: "/-show/showfile/show/chan32",
+    SHOW_RETURN_SAFE: "/-show/showfile/show/return",
+    SHOW_BUSES_SAFE: "/-show/showfile/show/buses",
+    SHOW_LRMTXDCA_SAFE: "/-show/showfile/show/lrmtxdca",
+    SHOW_EFFECTS_SAFE: "/-show/showfile/show/effects",
+};
+
+const SHOW_CUE = {
+    NUMB: "/-show/showfile/cue/{cue}/numb",
+    NAME: "/-show/showfile/cue/{cue}/name",
+    SKIP: "/-show/showfile/cue/{cue}/skip",
+    SCENE: "/-show/showfile/cue/{cue}/scene",
+    SNIPPET: "/-show/showfile/cue/{cue}/bit",
+    MIDI_TYPE: "/-show/showfile/cue/{cue}/miditype",
+    MIDI_CHAN: "/-show/showfile/cue/{cue}/midichan",
+    MIDI_PARA1: "/-show/showfile/cue/{cue}/midipara1",
+    MIDI_PARA2: "/-show/showfile/cue/{cue}/midipara2",
+};
+
+const SHOW_SCENE = {
+    NAME: "/-show/showfile/scene/{scene}/name",
+    NOTES: "/-show/showfile/scene/{scene}/notes",
+    SAFES: "/-show/showfile/scene/{scene}/safes",
+    HAS_DATA: "/-show/showfile/scene/{scene}/hasdata",
+};
+
+const SHOW_SNIPPET = {
+    NAME: "/-show/showfile/snippet/{snippet}/name",
+    EVENTTYP: "/-show/showfile/snippet/{snippet}/eventtyp",
+    CHANNELS: "/-show/showfile/snippet/{snippet}/channels",
+    AUXBUSES: "/-show/showfile/snippet/{snippet}/auxbuses",
+    MAINGRPS: "/-show/showfile/snippet/{snippet}/maingrps",
+    HAS_DATA: "/-show/showfile/snippet/{snippet}/hasdata",
+};
+
+const LIBS_CH = {
+    POS: "/-libs/ch/{idx}/pos",
+    NAME: "/-libs/ch/{idx}/name",
+    TYPE: "/-libs/ch/{idx}/type",
+    FLAGS: "/-libs/ch/{idx}/flags",
+    HAS_DATA: "/-libs/ch/{idx}/hasdata",
+};
+
+const LIBS_FX = {
+    POS: "/-libs/fx/{idx}/pos",
+    SHOW: "/-show/showfile/show",
+    SHOW_CUE: "/-show/showfile/cue",
+    SHOW_SCENE: "/-show/showfile/scene",
+    SHOW_SNIPPET: "/-show/showfile/snippet",
+    NAME: "/-libs/fx/{idx}/name",
+    TYPE: "/-libs/fx/{idx}/type",
+    FLAGS: "/-libs/fx/{idx}/flags",
+    HAS_DATA: "/-libs/fx/{idx}/hasdata",
+};
+
+const LIBS_ROUTING = {
+    POS: "/-libs/r/{idx}/pos",
+    NAME: "/-libs/r/{idx}/name",
+    TYPE: "/-libs/r/{idx}/type",
+    FLAGS: "/-libs/r/{idx}/flags",
+    HAS_DATA: "/-libs/r/{idx}/hasdata",
+};
+
+const LIBS_MON = {
+    POS: "/-libs/mon/{idx}/pos",
+    NAME: "/-libs/mon/{idx}/name",
+    TYPE: "/-libs/mon/{idx}/type",
+    FLAGS: "/-libs/mon/{idx}/flags",
+    HAS_DATA: "/-libs/mon/{idx}/hasdata",
+};
+
+// ============================================================================
+// 15. PREFS (Preferences) - /-prefs
+// ============================================================================
+
+const PREFS = {
+    STYLE: "/-prefs/style",
+    BRIGHT: "/-prefs/bright",
+    LCD_CONT: "/-prefs/lcdcont",
+    LED_BRIGHT: "/-prefs/ledbright",
+    LAMP: "/-prefs/lamp",
+    LAMP_ON: "/-prefs/lampon",
+    CLOCK_RATE: "/-prefs/clockrate",
+    CLOCK_SOURCE: "/-prefs/clocksource",
+    CONFIRM_GENERAL: "/-prefs/confirm_general",
+    CONFIRM_OVERWRITE: "/-prefs/confirm_overwrite",
+    CONFIRM_SCENELOAD: "/-prefs/confirm_sceneload",
+    VIEW_RETURN: "/-prefs/viewrtn",
+    SELF_FOLLOWS_BANK: "/-prefs/selfollowsbank",
+    SCENE_ADVANCE: "/-prefs/scene_advance",
+    SAFE_MASTER_LEVELS: "/-prefs/safe_masterlevels",
+    HAFLAGS: "/-prefs/haflags",
+    AUTOSEL43: "/-prefs/autosel43",
+    SHOW_CONTROL: "/-prefs/show_control",
+    CLOCKMODE: "/-prefs/clockmode",
+    HARDMUTE: "/-prefs/hardmute",
+    DCAMUTE: "/-prefs/dcamute",
+    INVERTMUTES: "/-prefs/invertmutes",
+    NAME: "/-prefs/name",
+    REC_CONTROL: "/-prefs/rec_control",
+    FAST_FADERS: "/-prefs/fastFaders",
+};
+
+const PREFS_IP = {
+    DHCP: "/-prefs/ip/dhcp",
+    ADDR: "/-prefs/ip/addr/{octet}",
+    MASK: "/-prefs/ip/mask/{octet}",
+    GATEWAY: "/-prefs/ip/gateway/{octet}",
+};
+
+const PREFS_REMOTE = {
+    ENABLE: "/-prefs/remote/enable",
+    PROTOCOL: "/-prefs/remote/protocol",
+    PORT: "/-prefs/remote/port",
+    IOENABLE: "/-prefs/remote/ioenable",
+};
+
+const PREFS_CARD = {
+    UFIFC: "/-prefs/card/UFifc",
+    UFMODE: "/-prefs/card/UFmode",
+    USBMODE: "/-prefs/card/USBmode",
+    ADAT_WC: "/-prefs/card/ADATwc",
+    ADAT_SYNC: "/-prefs/card/ADATsync",
+    MADI_MODE: "/-prefs/card/MADImode",
+    MADI_IN: "/-prefs/card/MADIin",
+    MADI_OUT: "/-prefs/card/MADIout",
+    MADI_SRC: "/-prefs/card/MADIsrc",
+    UREC_SDSEL: "/-prefs/card/URECsdsel",
+    UREC_TRACKS: "/-prefs/card/URECtracks",
+    UREC_PLAYB: "/-prefs/card/URECplayb",
+    UREC_ROUT: "/-prefs/card/URECrout",
+};
+
+const PREFS_RTA = {
+    VISIBILITY: "/-prefs/rta/visibility",
+    GAIN: "/-prefs/rta/gain",
+    AUTOGAIN: "/-prefs/rta/autogain",
+    SOURCE: "/-prefs/rta/source",
+    POS: "/-prefs/rta/pos",
+    MODE: "/-prefs/rta/mode",
+    OPTIONS: "/-prefs/rta/options",
+    DET: "/-prefs/rta/det",
+    DECAY: "/-prefs/rta/decay",
+    PEAKHOLD: "/-prefs/rta/peakhold",
+};
+
+const PREFS_IQ = {
+    MODEL: "/-prefs/iQ/{slot}/iQmodel",
+    EQSET: "/-prefs/iQ/{slot}/iQeqset",
+    SOUND: "/-prefs/iQ/{slot}/iQsound",
+};
+
+const PREFS_KEY = {
+    LAYOUT: "/-prefs/key/layout",
+    HISTORY: "/-prefs/key/{idx}",
+};
+
+// ============================================================================
+// 16. USB (/ -usb)
+// ============================================================================
+
+const USB = {
+    PATH: "/-usb/path",
+    TITLE: "/-usb/title",
+    DIR_POS: "/-usb/dir/dirpos",
+    DIR_MAXPOS: "/-usb/dir/maxpos",
+    DIR_TYPE: "/-usb/dir/{entry}/type",
+    DIR_NAME: "/-usb/dir/{entry}/name",
+};
+
+// ============================================================================
+// 17. STATUS (/ -stat) additions
+// ============================================================================
+
+const STATUS = {
+    SELIDX: "/-stat/selidx",
+    CHFADERBANK: "/-stat/chfaderbank",
+    GRPFADERBANK: "/-stat/grpfaderbank",
+    SENDSONFADER: "/-stat/sendsonfader",
+    BUSSENDBANK: "/-stat/bussendbank",
+    EQBAND: "/-stat/eqband",
+    SOLO: "/-stat/solo",
+    KEYSOLO: "/-stat/keysolo",
+    USERBANK: "/-stat/userbank",
+    AUTOSAVE: "/-stat/autosave",
+    LOCK: "/-stat/lock",
+    USBMOUNTED: "/-stat/usbmounted",
+    REMOTE: "/-stat/remote",
+    RTA_MODE_EQ: "/-stat/rtamodeeq",
+    RTA_MODE_GEQ: "/-stat/rtamodegeq",
+    RTA_EQ_PRE: "/-stat/rtaeqpre",
+    RTA_GEQ_POST: "/-stat/rtageqpost",
+    RTA_SOURCE: "/-stat/rtasource",
+    XCARDTYPE: "/-stat/xcardtype",
+    XCARD_SYNC: "/-stat/xcardsync",
+    GEQ_ON_FDR: "/-stat/geqonfdr",
+    GEQ_POS: "/-stat/geqpos",
+    SCREEN: "/-stat/screen/screen",
+    SCREEN_MUTEGRP: "/-stat/screen/mutegrp",
+    SCREEN_UTILS: "/-stat/screen/utils",
+    SCREEN_CHAN_PAGE: "/-stat/screen/CHAN/page",
+    SCREEN_METER_PAGE: "/-stat/screen/METER/page",
+    SCREEN_ROUTE_PAGE: "/-stat/screen/ROUTE/page",
+    SCREEN_SETUP_PAGE: "/-stat/screen/SETUP/page",
+    SCREEN_LIB_PAGE: "/-stat/screen/LIB/page",
+    SCREEN_FX_PAGE: "/-stat/screen/FX/page",
+    SCREEN_MON_PAGE: "/-stat/screen/MON/page",
+    SCREEN_USB_PAGE: "/-stat/screen/USB/page",
+    SCREEN_SCENE_PAGE: "/-stat/screen/SCENE/page",
+    SCREEN_ASSIGN_PAGE: "/-stat/screen/ASSIGN/page",
+    AES50_STATE: "/-stat/aes50/state",
+    AES50_CHAIN_A: "/-stat/aes50/A",
+    AES50_CHAIN_B: "/-stat/aes50/B",
+    SOLO_SWITCH: "/-stat/solosw/{ch}",
+    TALK: "/-stat/talk/{line}",
+    OSC_ON: "/-stat/osc/on",
+    TAPE_STATE: "/-stat/tape/state",
+    TAPE_FILE: "/-stat/tape/file",
+    TAPE_ETIME: "/-stat/tape/etime",
+    TAPE_RTIME: "/-stat/tape/rtime",
+    USERPAR_VALUE: "/-stat/userpar/{id}/value",
+    UREC_STATE: "/-stat/urec/state",
+    UREC_ETIME_MS: "/-stat/urec/etime",
+    UREC_RTIME_MS: "/-stat/urec/rtime",
+};
+
+// ============================================================================
+// 18. ACTION (/ -action) and UNDO (/ -undo)
+// ============================================================================
+
+const ACTION = {
+    SETIP: "/-action/setip",
+    SETCLOCK: "/-action/setclock",
+    INITALL: "/-action/initall",
+    INITLIB: "/-action/initlib",
+    INITSHOW: "/-action/initshow",
+    SAVESTATE: "/-action/savestate",
+    UNDOPT: "/-action/undopt",
+    DOUNDO: "/-action/doundo",
+    PLAYTRACK: "/-action/playtrack",
+    NEWSCREEN: "/-action/newscreen",
+    CLEARSOLO: "/-action/clearsolo",
+    SETPREBUS: "/-action/setprebus",
+    SETSRATE: "/-action/setsrate",
+    SETRTASRC: "/-action/setrtasrc",
+    RECSELECT: "/-action/recselect",
+    GOCUE: "/-action/gocue",
+    GOSCENE: "/-action/goscene",
+    GOSNIPPET: "/-action/gosnippet",
+    SELSESSION: "/-action/selsession",
+    DELSESSION: "/-action/delsession",
+    SELMARKER: "/-action/selmarker",
+    DELMARKER: "/-action/delmarker",
+    SAVEMARKER: "/-action/savemarker",
+    ADDMARKER: "/-action/addmarker",
+    SETPOSITION: "/-action/setposition",
+    CLEARALERT: "/-action/clearalert",
+    FORMATCARD: "/-action/formatcard",
+};
+
+const UNDO = {
+    TIME: "/-undo/time",
+};
+
+// ============================================================================
+// 19. UREC (X-Live! sdcard recording) - /-urec
+// ============================================================================
+
+const UREC = {
+    SESSIONMAX: "/-urec/sessionmax",
+    MARKERMAX: "/-urec/markermax",
+    SESSIONLEN: "/-urec/sessionlen",
+    SESSIONPOS: "/-urec/sessionpos",
+    MARKERPOS: "/-urec/markerpos",
+    BATTERYSTATE: "/-urec/batterystate",
+    SRATE: "/-urec/srate",
+    TRACKS: "/-urec/tracks",
+    SESSIONSPAN: "/-urec/sessionspan",
+    SESSIONOFFS: "/-urec/sessionoffs",
+    SD1STATE: "/-urec/sd1state",
+    SD2STATE: "/-urec/sd2state",
+    SD1INFO: "/-urec/sd1info",
+    SD2INFO: "/-urec/sd2info",
+    ERRORMESSAGE: "/-urec/errormessage",
+    ERRORCODE: "/-urec/errorcode",
+    SESSION_NAME: "/-urec/session/{session}/name",
+    MARKER_TIME: "/-urec/marker/{marker}/time",
 };
 
 // ============================================================================
@@ -289,6 +732,15 @@ function formatBus(bus) {
  */
 function formatIndex(index) {
     return index.toString().padStart(2, "0");
+}
+
+/**
+ * Format index with 3 digits (0 -> "000")
+ * @param {number} index - Index number
+ * @returns {string} Formatted index
+ */
+function formatIndex3(index) {
+    return index.toString().padStart(3, "0");
 }
 
 // ============================================================================
@@ -407,6 +859,580 @@ function saveShow(slot) {
 }
 
 // ============================================================================
+// HELPER FUNCTIONS - Main Stereo/Mono
+// ============================================================================
+
+function setMainStereoFader(level) {
+    return createMessage(MAIN_STEREO_MIX.FADER, "f", level);
+}
+
+function setMainStereoFaderDb(db) {
+    return setMainStereoFader(dbToLevel(db));
+}
+
+function setMainStereoOn(on) {
+    return createMessage(MAIN_STEREO_MIX.ON, "i", on ? 1 : 0);
+}
+
+function setMainStereoPan(pan) {
+    return createMessage(MAIN_STEREO_MIX.PAN, "f", pan);
+}
+
+function setMainStereoSendOn(mtx, on) {
+    const path = resolvePath(MAIN_STEREO_MIX.SEND_ON, {
+        mtx: formatIndex(mtx),
+    });
+    return createMessage(path, "i", on ? 1 : 0);
+}
+
+function setMainStereoSendLevel(mtx, level) {
+    const path = resolvePath(MAIN_STEREO_MIX.SEND_LEVEL, {
+        mtx: formatIndex(mtx),
+    });
+    return createMessage(path, "f", level);
+}
+
+function setMainStereoSendLevelDb(mtx, db) {
+    return setMainStereoSendLevel(mtx, dbToLevel(db));
+}
+
+function setMainStereoSendPan(mtx, pan) {
+    const path = resolvePath(MAIN_STEREO_MIX.SEND_PAN, {
+        mtx: formatIndex(mtx),
+    });
+    return createMessage(path, "f", pan);
+}
+
+function setMainMonoFader(level) {
+    return createMessage(MAIN_MONO_MIX.FADER, "f", level);
+}
+
+function setMainMonoFaderDb(db) {
+    return setMainMonoFader(dbToLevel(db));
+}
+
+function setMainMonoOn(on) {
+    return createMessage(MAIN_MONO_MIX.ON, "i", on ? 1 : 0);
+}
+
+function setMainMonoSendOn(mtx, on) {
+    const path = resolvePath(MAIN_MONO_MIX.SEND_ON, { mtx: formatIndex(mtx) });
+    return createMessage(path, "i", on ? 1 : 0);
+}
+
+function setMainMonoSendLevel(mtx, level) {
+    const path = resolvePath(MAIN_MONO_MIX.SEND_LEVEL, {
+        mtx: formatIndex(mtx),
+    });
+    return createMessage(path, "f", level);
+}
+
+function setMainMonoSendLevelDb(mtx, db) {
+    return setMainMonoSendLevel(mtx, dbToLevel(db));
+}
+
+function setMainMonoSendPan(mtx, pan) {
+    const path = resolvePath(MAIN_MONO_MIX.SEND_PAN, { mtx: formatIndex(mtx) });
+    return createMessage(path, "f", pan);
+}
+
+// ============================================================================
+// HELPER FUNCTIONS - FX
+// ============================================================================
+
+function setFxType(fx, type) {
+    const path = resolvePath(FX_SLOT.TYPE, { fx: fx });
+    return createMessage(path, "i", type);
+}
+
+function setFxOn(fx, on) {
+    const path = resolvePath(FX_SLOT.ON, { fx: fx });
+    return createMessage(path, "i", on ? 1 : 0);
+}
+
+function setFxSourceL(fx, src) {
+    const path = resolvePath(FX_SOURCE.L, { fx: fx });
+    return createMessage(path, "i", src);
+}
+
+function setFxSourceR(fx, src) {
+    const path = resolvePath(FX_SOURCE.R, { fx: fx });
+    return createMessage(path, "i", src);
+}
+
+function setFxParam(fx, par, value, type = "f") {
+    const path = resolvePath(FX_PARAMS.BASE, { fx: fx, par: formatIndex(par) });
+    return createMessage(path, type, value);
+}
+
+// ============================================================================
+// HELPER FUNCTIONS - Output Routing
+// ============================================================================
+
+function setOutputMainSrc(out, src) {
+    const path = resolvePath(OUTPUT_MAIN.SRC, { out: formatIndex(out) });
+    return createMessage(path, "i", src);
+}
+
+function setOutputMainPos(out, pos) {
+    const path = resolvePath(OUTPUT_MAIN.POS, { out: formatIndex(out) });
+    return createMessage(path, "i", pos);
+}
+
+function setOutputMainInvert(out, invert) {
+    const path = resolvePath(OUTPUT_MAIN.INVERT, { out: formatIndex(out) });
+    return createMessage(path, "i", invert ? 1 : 0);
+}
+
+function setOutputMainDelay(out, on, timeMs) {
+    const onPath = resolvePath(OUTPUT_MAIN.DELAY_ON, { out: formatIndex(out) });
+    const timePath = resolvePath(OUTPUT_MAIN.DELAY_TIME, {
+        out: formatIndex(out),
+    });
+    return [
+        createMessage(onPath, "i", on ? 1 : 0),
+        createMessage(timePath, "f", timeMs),
+    ];
+}
+
+function setOutputAuxSrc(out, src) {
+    const path = resolvePath(OUTPUT_AUX.SRC, { out: formatIndex(out) });
+    return createMessage(path, "i", src);
+}
+
+function setOutputAuxPos(out, pos) {
+    const path = resolvePath(OUTPUT_AUX.POS, { out: formatIndex(out) });
+    return createMessage(path, "i", pos);
+}
+
+function setOutputAuxInvert(out, invert) {
+    const path = resolvePath(OUTPUT_AUX.INVERT, { out: formatIndex(out) });
+    return createMessage(path, "i", invert ? 1 : 0);
+}
+
+function setOutputP16Src(out, src) {
+    const path = resolvePath(OUTPUT_P16.SRC, { out: formatIndex(out) });
+    return createMessage(path, "i", src);
+}
+
+function setOutputP16Pos(out, pos) {
+    const path = resolvePath(OUTPUT_P16.POS, { out: formatIndex(out) });
+    return createMessage(path, "i", pos);
+}
+
+function setOutputP16Invert(out, invert) {
+    const path = resolvePath(OUTPUT_P16.INVERT, { out: formatIndex(out) });
+    return createMessage(path, "i", invert ? 1 : 0);
+}
+
+function setOutputP16Iq(out, { group, speaker, eq, model }) {
+    const messages = [];
+    if (group !== undefined) {
+        messages.push(
+            createMessage(
+                resolvePath(OUTPUT_P16.IQ_GROUP, { out: formatIndex(out) }),
+                "i",
+                group,
+            ),
+        );
+    }
+    if (speaker !== undefined) {
+        messages.push(
+            createMessage(
+                resolvePath(OUTPUT_P16.IQ_SPEAKER, { out: formatIndex(out) }),
+                "i",
+                speaker,
+            ),
+        );
+    }
+    if (eq !== undefined) {
+        messages.push(
+            createMessage(
+                resolvePath(OUTPUT_P16.IQ_EQ, { out: formatIndex(out) }),
+                "i",
+                eq,
+            ),
+        );
+    }
+    if (model !== undefined) {
+        messages.push(
+            createMessage(
+                resolvePath(OUTPUT_P16.IQ_MODEL, { out: formatIndex(out) }),
+                "i",
+                model,
+            ),
+        );
+    }
+    return messages;
+}
+
+function setOutputAesSrc(out, src) {
+    const path = resolvePath(OUTPUT_AES.SRC, { out: formatIndex(out) });
+    return createMessage(path, "i", src);
+}
+
+function setOutputAesPos(out, pos) {
+    const path = resolvePath(OUTPUT_AES.POS, { out: formatIndex(out) });
+    return createMessage(path, "i", pos);
+}
+
+function setOutputAesInvert(out, invert) {
+    const path = resolvePath(OUTPUT_AES.INVERT, { out: formatIndex(out) });
+    return createMessage(path, "i", invert ? 1 : 0);
+}
+
+function setOutputRecSrc(out, src) {
+    const path = resolvePath(OUTPUT_REC.SRC, { out: formatIndex(out) });
+    return createMessage(path, "i", src);
+}
+
+function setOutputRecPos(out, pos) {
+    const path = resolvePath(OUTPUT_REC.POS, { out: formatIndex(out) });
+    return createMessage(path, "i", pos);
+}
+
+function setOutputRecInvert(out, invert) {
+    const path = resolvePath(OUTPUT_REC.INVERT, { out: formatIndex(out) });
+    return createMessage(path, "i", invert ? 1 : 0);
+}
+
+// ============================================================================
+// HELPER FUNCTIONS - DCA
+// ============================================================================
+
+function setDcaOn(dca, on) {
+    const path = resolvePath(DCA.ON, { dca: formatIndex(dca) });
+    return createMessage(path, "i", on ? 1 : 0);
+}
+
+function setDcaFader(dca, level) {
+    const path = resolvePath(DCA.FADER, { dca: formatIndex(dca) });
+    return createMessage(path, "f", level);
+}
+
+function setDcaFaderDb(dca, db) {
+    return setDcaFader(dca, dbToLevel(db));
+}
+
+// ============================================================================
+// HELPER FUNCTIONS - Show/Cue/Scene/Snippet/Presets
+// ============================================================================
+
+function showDump() {
+    return createEmptyMessage(SHOW.DUMP);
+}
+
+function setShowName(name) {
+    return createMessage(SHOW.NAME, "s", name);
+}
+
+function setCueNumber(cueIndex, cueNumberInt) {
+    const path = resolvePath(SHOW_CUE.NUMB, { cue: formatIndex3(cueIndex) });
+    return createMessage(path, "i", cueNumberInt);
+}
+
+function setCueName(cueIndex, name) {
+    const path = resolvePath(SHOW_CUE.NAME, { cue: formatIndex3(cueIndex) });
+    return createMessage(path, "s", name);
+}
+
+function setCueSkip(cueIndex, skip) {
+    const path = resolvePath(SHOW_CUE.SKIP, { cue: formatIndex3(cueIndex) });
+    return createMessage(path, "i", skip ? 1 : 0);
+}
+
+function setCueScene(cueIndex, sceneIndex) {
+    const path = resolvePath(SHOW_CUE.SCENE, { cue: formatIndex3(cueIndex) });
+    return createMessage(path, "i", sceneIndex);
+}
+
+function setCueSnippet(cueIndex, snippetIndex) {
+    const path = resolvePath(SHOW_CUE.SNIPPET, { cue: formatIndex3(cueIndex) });
+    return createMessage(path, "i", snippetIndex);
+}
+
+function setCueMidi(cueIndex, { type, channel, param1, param2 }) {
+    const messages = [];
+    if (type !== undefined) {
+        messages.push(
+            createMessage(
+                resolvePath(SHOW_CUE.MIDI_TYPE, {
+                    cue: formatIndex3(cueIndex),
+                }),
+                "i",
+                type,
+            ),
+        );
+    }
+    if (channel !== undefined) {
+        messages.push(
+            createMessage(
+                resolvePath(SHOW_CUE.MIDI_CHAN, {
+                    cue: formatIndex3(cueIndex),
+                }),
+                "i",
+                channel,
+            ),
+        );
+    }
+    if (param1 !== undefined) {
+        messages.push(
+            createMessage(
+                resolvePath(SHOW_CUE.MIDI_PARA1, {
+                    cue: formatIndex3(cueIndex),
+                }),
+                "i",
+                param1,
+            ),
+        );
+    }
+    if (param2 !== undefined) {
+        messages.push(
+            createMessage(
+                resolvePath(SHOW_CUE.MIDI_PARA2, {
+                    cue: formatIndex3(cueIndex),
+                }),
+                "i",
+                param2,
+            ),
+        );
+    }
+    return messages;
+}
+
+function setSceneMeta(sceneIndex, { name, notes, safes }) {
+    const messages = [];
+    if (name !== undefined) {
+        messages.push(
+            createMessage(
+                resolvePath(SHOW_SCENE.NAME, {
+                    scene: formatIndex3(sceneIndex),
+                }),
+                "s",
+                name,
+            ),
+        );
+    }
+    if (notes !== undefined) {
+        messages.push(
+            createMessage(
+                resolvePath(SHOW_SCENE.NOTES, {
+                    scene: formatIndex3(sceneIndex),
+                }),
+                "s",
+                notes,
+            ),
+        );
+    }
+    if (safes !== undefined) {
+        messages.push(
+            createMessage(
+                resolvePath(SHOW_SCENE.SAFES, {
+                    scene: formatIndex3(sceneIndex),
+                }),
+                "i",
+                safes,
+            ),
+        );
+    }
+    return messages;
+}
+
+function setSnippetMeta(
+    snippetIndex,
+    { name, eventtyp, channels, auxbuses, maingrps },
+) {
+    const messages = [];
+    if (name !== undefined) {
+        messages.push(
+            createMessage(
+                resolvePath(SHOW_SNIPPET.NAME, {
+                    snippet: formatIndex3(snippetIndex),
+                }),
+                "s",
+                name,
+            ),
+        );
+    }
+    if (eventtyp !== undefined) {
+        messages.push(
+            createMessage(
+                resolvePath(SHOW_SNIPPET.EVENTTYP, {
+                    snippet: formatIndex3(snippetIndex),
+                }),
+                "i",
+                eventtyp,
+            ),
+        );
+    }
+    if (channels !== undefined) {
+        messages.push(
+            createMessage(
+                resolvePath(SHOW_SNIPPET.CHANNELS, {
+                    snippet: formatIndex3(snippetIndex),
+                }),
+                "i",
+                channels,
+            ),
+        );
+    }
+    if (auxbuses !== undefined) {
+        messages.push(
+            createMessage(
+                resolvePath(SHOW_SNIPPET.AUXBUSES, {
+                    snippet: formatIndex3(snippetIndex),
+                }),
+                "i",
+                auxbuses,
+            ),
+        );
+    }
+    if (maingrps !== undefined) {
+        messages.push(
+            createMessage(
+                resolvePath(SHOW_SNIPPET.MAINGRPS, {
+                    snippet: formatIndex3(snippetIndex),
+                }),
+                "i",
+                maingrps,
+            ),
+        );
+    }
+    return messages;
+}
+
+function libraryPath(libGroup, field, idx) {
+    return resolvePath(libGroup[field], { idx: formatIndex3(idx) });
+}
+
+function setLibraryName(libGroup, idx, name) {
+    return createMessage(libraryPath(libGroup, "NAME", idx), "s", name);
+}
+
+// Generic dataset commands (/add, /copy, /save, /load, /delete, /rename)
+function addCue(indexInt, name) {
+    return {
+        address: "/add",
+        args: [
+            { type: "s", value: "cue" },
+            { type: "i", value: indexInt },
+            { type: "s", value: name },
+        ],
+    };
+}
+
+function copyEntity(kind, srcIndex, dstIndex) {
+    return {
+        address: "/copy",
+        args: [
+            { type: "s", value: kind },
+            { type: "i", value: srcIndex },
+            { type: "i", value: dstIndex },
+        ],
+    };
+}
+
+function saveEntity(kind, params = []) {
+    return {
+        address: "/save",
+        args: [{ type: "s", value: kind }, ...params],
+    };
+}
+
+function loadEntity(kind, params = []) {
+    return {
+        address: "/load",
+        args: [{ type: "s", value: kind }, ...params],
+    };
+}
+
+function renameEntity(kind, index, newName) {
+    return {
+        address: "/rename",
+        args: [
+            { type: "s", value: kind },
+            { type: "i", value: index },
+            { type: "s", value: newName },
+        ],
+    };
+}
+
+function deleteEntity(kind, index) {
+    return {
+        address: "/delete",
+        args: [
+            { type: "s", value: kind },
+            { type: "i", value: index },
+        ],
+    };
+}
+
+// ============================================================================
+// HELPER FUNCTIONS - Preferences / USB / Action
+// ============================================================================
+
+function setPref(path, type, value) {
+    return createMessage(path, type, value);
+}
+
+function setPrefIpAddr(octet, value) {
+    const path = resolvePath(PREFS_IP.ADDR, { octet: octet });
+    return createMessage(path, "i", value);
+}
+
+function setPrefIpMask(octet, value) {
+    const path = resolvePath(PREFS_IP.MASK, { octet: octet });
+    return createMessage(path, "i", value);
+}
+
+function setPrefIpGateway(octet, value) {
+    const path = resolvePath(PREFS_IP.GATEWAY, { octet: octet });
+    return createMessage(path, "i", value);
+}
+
+function setPrefIq(slot, { model, eqset, sound }) {
+    const messages = [];
+    const formattedSlot = formatIndex(slot);
+    if (model !== undefined) {
+        messages.push(
+            createMessage(
+                resolvePath(PREFS_IQ.MODEL, { slot: formattedSlot }),
+                "i",
+                model,
+            ),
+        );
+    }
+    if (eqset !== undefined) {
+        messages.push(
+            createMessage(
+                resolvePath(PREFS_IQ.EQSET, { slot: formattedSlot }),
+                "i",
+                eqset,
+            ),
+        );
+    }
+    if (sound !== undefined) {
+        messages.push(
+            createMessage(
+                resolvePath(PREFS_IQ.SOUND, { slot: formattedSlot }),
+                "i",
+                sound,
+            ),
+        );
+    }
+    return messages;
+}
+
+function setPrefKeyHistory(idx, text) {
+    const path = resolvePath(PREFS_KEY.HISTORY, { idx: formatIndex(idx) });
+    return createMessage(path, "s", text);
+}
+
+function triggerAction(actionPath, value = 1, type = "i") {
+    return createMessage(actionPath, type, value);
+}
+
+// ============================================================================
 // HELPER FUNCTIONS - Channel
 // ============================================================================
 
@@ -494,6 +1520,70 @@ function subscribeToChannel(ch, param, frequency) {
         address: SUBSCRIBE.BASIC,
         args: args,
     };
+}
+
+function subscribe(command, timeFactor = 0) {
+    return {
+        address: SUBSCRIBE.BASIC,
+        args: [
+            { type: "s", value: command },
+            { type: "i", value: timeFactor },
+        ],
+    };
+}
+
+function formatSubscribe(
+    alias,
+    commands,
+    rangeStart = 0,
+    rangeEnd = 0,
+    timeFactor = 0,
+) {
+    const cmdList = Array.isArray(commands) ? commands : [commands];
+    const args = [
+        { type: "s", value: alias },
+        ...cmdList.map((c) => ({ type: "s", value: c })),
+        { type: "i", value: rangeStart },
+        { type: "i", value: rangeEnd },
+        { type: "i", value: timeFactor },
+    ];
+    return {
+        address: SUBSCRIBE.FORMAT,
+        args: args,
+    };
+}
+
+function batchSubscribe(
+    alias,
+    meterCommand,
+    arg0 = 0,
+    arg1 = 0,
+    timeFactor = 0,
+) {
+    return {
+        address: SUBSCRIBE.BATCH,
+        args: [
+            { type: "s", value: alias },
+            { type: "s", value: meterCommand },
+            { type: "i", value: arg0 },
+            { type: "i", value: arg1 },
+            { type: "i", value: timeFactor },
+        ],
+    };
+}
+
+function renewSubscription(alias) {
+    if (alias) {
+        return createMessage(SYSTEM.RENEW, "s", alias);
+    }
+    return createEmptyMessage(SYSTEM.RENEW);
+}
+
+function unsubscribe(alias) {
+    if (alias) {
+        return createMessage(SUBSCRIBE.UNSUBSCRIBE, "s", alias);
+    }
+    return createEmptyMessage(SUBSCRIBE.UNSUBSCRIBE);
 }
 
 // ============================================================================
@@ -604,27 +1694,65 @@ module.exports = {
     BUS_EQ_DYN,
     BUS_MIX,
     FX_SLOT,
+    FX_SOURCE,
     FX_PARAMS,
     FX_RETURN,
     MATRIX,
-    MAIN_STEREO,
-    MAIN_MONO,
+    MAIN_STEREO_CONFIG,
+    MAIN_STEREO_DYN,
+    MAIN_STEREO_DYN_FILTER,
+    MAIN_STEREO_INSERT,
+    MAIN_STEREO_EQ,
+    MAIN_STEREO_MIX,
+    MAIN_MONO_CONFIG,
+    MAIN_MONO_DYN,
+    MAIN_MONO_DYN_FILTER,
+    MAIN_MONO_INSERT,
+    MAIN_MONO_EQ,
+    MAIN_MONO_MIX,
     DCA,
+    DCA_CONFIG,
     AUXIN,
     OUTPUT,
+    OUTPUT_MAIN,
+    OUTPUT_AUX,
+    OUTPUT_P16,
+    OUTPUT_AES,
+    OUTPUT_REC,
     HEADAMP,
     METERS,
+    STATUS,
     STATUS_PATHS,
     SCENE,
     SNIPPET,
     NODE,
     SUBSCRIBE,
+    SHOW,
+    SHOW_CUE,
+    SHOW_SCENE,
+    SHOW_SNIPPET,
+    LIBS_CH,
+    LIBS_FX,
+    LIBS_ROUTING,
+    LIBS_MON,
+    PREFS,
+    PREFS_IP,
+    PREFS_REMOTE,
+    PREFS_CARD,
+    PREFS_RTA,
+    PREFS_IQ,
+    PREFS_KEY,
+    USB,
+    ACTION,
+    UNDO,
+    UREC,
 
     // Path helpers
     resolvePath,
     formatChannel,
     formatBus,
     formatIndex,
+    formatIndex3,
 
     // Message creation
     createMessage,
@@ -643,6 +1771,64 @@ module.exports = {
     loadShow,
     saveShow,
 
+    // Main stereo/mono functions
+    setMainStereoFader,
+    setMainStereoFaderDb,
+    setMainStereoOn,
+    setMainStereoPan,
+    setMainStereoSendOn,
+    setMainStereoSendLevel,
+    setMainStereoSendLevelDb,
+    setMainStereoSendPan,
+    setMainMonoFader,
+    setMainMonoFaderDb,
+    setMainMonoOn,
+    setMainMonoSendOn,
+    setMainMonoSendLevel,
+    setMainMonoSendLevelDb,
+    setMainMonoSendPan,
+
+    // DCA functions
+    setDcaOn,
+    setDcaFader,
+    setDcaFaderDb,
+
+    // FX functions
+    setFxType,
+    setFxOn,
+    setFxSourceL,
+    setFxSourceR,
+    setFxParam,
+
+    // Show/Cue/Scene/Snippet/Presets functions
+    showDump,
+    setShowName,
+    setCueNumber,
+    setCueName,
+    setCueSkip,
+    setCueScene,
+    setCueSnippet,
+    setCueMidi,
+    setSceneMeta,
+    setSnippetMeta,
+    libraryPath,
+    setLibraryName,
+    addCue,
+    copyEntity,
+    saveEntity,
+    loadEntity,
+    renameEntity,
+    deleteEntity,
+
+    // Preferences / action helpers
+    setPref,
+    setPrefIpAddr,
+    setPrefIpMask,
+    setPrefIpGateway,
+    setPrefIq,
+    setPrefKeyHistory,
+    triggerAction,
+
     // Channel functions
     setChannelFader,
     getChannelFader,
@@ -651,10 +1837,34 @@ module.exports = {
     setChannelMute,
     setChannelTrim,
     subscribeToChannel,
+    subscribe,
+    formatSubscribe,
+    batchSubscribe,
+    renewSubscription,
+    unsubscribe,
 
     // Bus functions
     setBusFader,
     setBusOn,
+
+    // Output routing functions
+    setOutputMainSrc,
+    setOutputMainPos,
+    setOutputMainInvert,
+    setOutputMainDelay,
+    setOutputAuxSrc,
+    setOutputAuxPos,
+    setOutputAuxInvert,
+    setOutputP16Src,
+    setOutputP16Pos,
+    setOutputP16Invert,
+    setOutputP16Iq,
+    setOutputAesSrc,
+    setOutputAesPos,
+    setOutputAesInvert,
+    setOutputRecSrc,
+    setOutputRecPos,
+    setOutputRecInvert,
 
     // Level conversion
     dbToLevel,

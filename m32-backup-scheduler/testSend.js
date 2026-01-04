@@ -2,7 +2,7 @@
 const osc = require("osc");
 const OSC = require("./oscMessages");
 
-const TARGET_IP = process.env.M32_IP || "192.168.0.96";
+const TARGET_IP = process.env.M32_IP || "hyeoni1995.iptime.org";
 const TARGET_PORT = parseInt(process.env.M32_PORT || "10023", 10);
 
 const udpPort = new osc.UDPPort({
