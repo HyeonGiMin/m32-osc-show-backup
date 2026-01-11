@@ -37,11 +37,12 @@ console.error = (...args) => {
 };
 
 // ===== 설정 =====
-let M32_IP = process.env.M32_IP || "192.168.0.2";
-let M32_PORT = parseInt(process.env.M32_PORT || "10023", 10);
+const M32_IP = process.env.M32_IP || "192.168.0.2";
+const M32_PORT = parseInt(process.env.M32_PORT || "10023", 10);
 
 console.log("=".repeat(50));
 console.log("M32/X32 OSC Command Sender");
+console.log(`연결 대상: ${M32_IP}:${M32_PORT}`);
 console.log("=".repeat(50));
 console.log("");
 
@@ -224,39 +225,8 @@ function initializeOSCPort() {
     udpPort.open();
 }
 
-// ===== 초기 설정 입력 =====
-function promptSettings() {
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-    });
-
-    rl.question(`M32/X32 IP 주소 (기본값: ${M32_IP}): `, (ip) => {
-        if (ip.trim()) {
-            M32_IP = ip.trim();
-        }
-
-        rl.question(`OSC 포트 (기본값: ${M32_PORT}): `, (port) => {
-            if (port.trim()) {
-                const parsedPort = parseInt(port.trim(), 10);
-                if (!isNaN(parsedPort)) {
-                    M32_PORT = parsedPort;
-                }
-            }
-
-            console.log("\n" + "=".repeat(50));
-            console.log(`연결 대상: ${M32_IP}:${M32_PORT}`);
-            console.log("=".repeat(50));
-            console.log("");
-
-            rl.close();
-            initializeOSCPort();
-        });
-    });
-}
-
 // 프로그램 시작
-promptSettings();
+initializeOSCPort();
 
 // ===== 커맨드 전송 =====
 function sendCommand(address, args = []) {
