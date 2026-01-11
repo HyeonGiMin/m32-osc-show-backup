@@ -3,7 +3,7 @@ const path = require("path");
 const osc = require("osc");
 
 // ===== 설정 =====
-const M32_IP = process.env.M32_IP || "192.168.0.2";
+const M32_IP = process.env.M32_IP || "192.168.0.96";
 const M32_PORT = parseInt(process.env.M32_PORT || "10023", 10);
 const MIN_SLOT = 80;
 const MAX_SLOT = 99;
@@ -61,73 +61,36 @@ const udpPort = new osc.UDPPort({
 function sendOSC(address, args = []) {
     return new Promise((resolve, reject) => {
         try {
-            const message = { address, args };
-            udpPort.send(message, M32_IP, M32_PORT);
-            console.log(`→ 전송: ${address}`);
-            if (args.length > 0) {
-                console.log(
-                    "  인자:",
-                    args
-                        .map((arg) => {
-                            if (typeof arg === "object") {
-                                return `${arg.type}: ${arg.value}`;
-                            }
-                            return arg;
-                        })
-                        .join(", "),
-                );
-            }
+            udpPort.send({ address, args }, M32_IP, M32_PORT);
             resolve();
         } catch (e) {
-            console.error("전송 실패:", e.message);
             reject(e);
         }
     });
 }
 
-// 슬롯의 scene 데이터 존재 여부 확인
-function checkSceneData(slot) {
+async function checkConsoleReachable(timeoutMs = 2000) {
     return new Promise((resolve) => {
-        let hasData = false;
-        let timeout;
-        const slotStr = String(slot).padStart(3, "0");
-        let targetAddress = `/-show/showfile/scene/${slotStr}/hasdata`;
+        let finished = false;
 
-        targetAddress = targetAddress.normalize("NFKC");
-        targetAddress = targetAddress.replace(/[\u2010-\u2015\u2212]/g, "-");
+        const finish = (ok, reason) => {
+            if (finished) return;
+            finished = true;
+            clearTimeout(timer);
+            udpPort.removeListener("message", onMessage);
+            resolve({ ok, reason });
+        };
 
-        const messageHandler = (oscMessage) => {
-            // hasdata 응답 확인
-            if (
-                oscMessage.address === targetAddress &&
-                oscMessage.args &&
-                oscMessage.args.length > 0
-            ) {
-                const value = oscMessage.args[0].value;
-                hasData = value === 1 ? true : false;
-                clearTimeout(timeout);
-                udpPort.removeListener("message", messageHandler);
-                resolve(hasData);
+        const onMessage = (oscMsg) => {
+            if (oscMsg.address === "/info") {
+                finish(true, "info");
             }
         };
 
-        udpPort.on("message", messageHandler);
+        const timer = setTimeout(() => finish(false, "timeout"), timeoutMs);
+        udpPort.on("message", onMessage);
 
-        // 타임아웃 설정 (1초)
-        timeout = setTimeout(() => {
-            udpPort.removeListener("message", messageHandler);
-            resolve(hasData);
-        }, 1000);
-
-        // Scene 데이터 존재 여부 요청
-        try {
-            udpPort.send({ address: targetAddress }, M32_IP, M32_PORT);
-        } catch (e) {
-            log(`WARN: Scene 정보 요청 실패: ${e.message}`);
-            clearTimeout(timeout);
-            udpPort.removeListener("message", messageHandler);
-            resolve(false);
-        }
+        sendOSC("/info").catch(() => finish(false, "send-error"));
     });
 }
 
@@ -136,31 +99,30 @@ async function main() {
     log("=== M32 Scene 자동 백업 시작 ===");
     log(`TARGET ${M32_IP}:${M32_PORT}, SLOTS ${MIN_SLOT}-${MAX_SLOT}`);
 
-    // 슬롯 1의 scene 데이터 확인
-    log("Slot 1의 Scene 데이터 확인 중...");
-    const hasSceneData = await checkSceneData(1);
-    if (hasSceneData) {
-        log("✓ Slot 1에 Scene 데이터가 있습니다");
-    } else {
-        log("✗ Slot 1에 Scene 데이터가 없습니다");
+    const reachable = await checkConsoleReachable();
+    if (!reachable.ok) {
+        log("ERROR: 콘솔 응답 없음 (/info). IP/포트를 확인 후 재시도하세요.");
+        udpPort.close();
+        process.exit(1);
+        return;
     }
+    log("콘솔 응답 확인: /info 수신");
 
     const indexData = loadIndex();
     const slot = indexData.currentSlot;
 
     // Scene 저장 요청 (/save "scene" <index> <name> <note>)
-    const slotStr = String(slot).padStart(3, "0"); // 3자리 형식 (예: "081")
     const sceneName = `Auto_${slot}`;
-    const sceneNote = new Date().toISOString().split("T")[0]; // YYYY-MM-DD 형식
+    const sceneNote = new Date().toISOString();
 
-    log(`SAVE Scene to slot ${slotStr} (${sceneName})`);
+    log(`SAVE Scene to slot ${slot} (${sceneName})`);
     await sendOSC("/save", [
         { type: "s", value: "scene" },
-        { type: "s", value: slotStr }, // 정수 대신 3자리 문자열로
+        { type: "i", value: slot },
         { type: "s", value: sceneName },
         { type: "s", value: sceneNote },
     ]);
-    log(`Scene 저장 완료: Slot ${slotStr}`);
+    log(`Scene 저장 완료: Slot ${slot}`);
 
     // 다음 슬롯 계산
     const nextSlot = getNextSlot(slot, indexData.minSlot, indexData.maxSlot);
@@ -174,12 +136,8 @@ async function main() {
 udpPort.on("ready", () => {
     main()
         .then(() => {
-            log("=== 백업 완료, 프로세스 종료 ===");
-            // 프로세스 종료 전 약간의 대기
-            setTimeout(() => {
-                udpPort.close();
-                process.exit(0);
-            }, 200);
+            udpPort.close();
+            process.exit(0);
         })
         .catch((err) => {
             log(`ERROR: ${err.message}`);
