@@ -7,6 +7,8 @@ class OSCClient {
         this.port = port;
         this.udpPort = null;
         this.isReady = false;
+        this.xremoteTimer = null;
+        this.receiveMode = false;
     }
 
     connect() {
@@ -29,7 +31,14 @@ class OSCClient {
             });
 
             this.udpPort.on("message", (oscMsg) => {
-                logger.debug({ msg: oscMsg }, "OSC message received");
+                if (this.receiveMode) {
+                    logger.info(
+                        { address: oscMsg.address, args: oscMsg.args },
+                        "← M32 메시지 수신",
+                    );
+                } else {
+                    logger.debug({ msg: oscMsg }, "OSC message received");
+                }
             });
 
             this.udpPort.open();
@@ -78,11 +87,47 @@ class OSCClient {
         ]);
     }
 
+    async startXremote() {
+        if (!this.isReady) {
+            throw new Error("OSC Client is not ready");
+        }
+
+        logger.info("Starting /xremote keepalive mode (9초 간격)");
+        this.receiveMode = true;
+
+        // 첫 /xremote 전송
+        await this.sendMessage("/xremote", []);
+
+        // 9초마다 keepalive
+        this.xremoteTimer = setInterval(async () => {
+            try {
+                await this.sendMessage("/xremote", []);
+                logger.debug("→ /xremote keepalive");
+            } catch (err) {
+                logger.error({ err }, "xremote keepalive failed");
+            }
+        }, 9000);
+
+        logger.info(
+            "Receive mode 활성화 - M32 변경사항을 실시간으로 수신합니다",
+        );
+    }
+
+    stopXremote() {
+        if (this.xremoteTimer) {
+            clearInterval(this.xremoteTimer);
+            this.xremoteTimer = null;
+            this.receiveMode = false;
+            logger.info("Stopped /xremote keepalive mode");
+        }
+    }
+
     delay(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
     close() {
+        this.stopXremote();
         if (this.udpPort) {
             this.udpPort.close();
             this.isReady = false;

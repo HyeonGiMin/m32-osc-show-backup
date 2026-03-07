@@ -1,10 +1,14 @@
 {
     "name": "m32-osc-command",
     "version": "1.0.0",
-    "description": "Send OSC commands to M32/X32 console",
-    "main": "send.js",
+    "description": "M32/X32 OSC Console - Interactive CLI for Behringer M32/X32",
+    "main": "index.js",
+    "bin": {
+        "m32-console": "./index.js"
+    },
     "scripts": {
-        "start": "node send.js"
+        "start": "node index.js",
+        "dev": "node send.js"
     },
     "keywords": [
         "m32",
