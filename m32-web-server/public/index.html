@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M32 Web Server</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>M32 Web Server</h1>
+    <div id="header-summary">로딩 중...</div>
+</header>
+
+<main>
+    <!-- Console Management -->
+    <section>
+        <div class="section-header">
+            <span>콘솔 관리</span>
+            <button class="btn small" onclick="toggleConsoleForm()">+ 추가</button>
+        </div>
+
+        <form id="console-form" class="inline-form" onsubmit="submitConsole(event)">
+            <input type="hidden" id="cf-id">
+            <div class="form-field">
+                <label>이름</label>
+                <input type="text" id="cf-name" placeholder="Main Stage" required style="width:140px">
+            </div>
+            <div class="form-field">
+                <label>IP 주소</label>
+                <input type="text" id="cf-ip" placeholder="192.168.0.2" required style="width:140px">
+            </div>
+            <div class="form-field">
+                <label>포트</label>
+                <input type="number" id="cf-port" value="10023" style="width:80px">
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn primary small">저장</button>
+                <button type="button" class="btn small" onclick="cancelConsoleForm()">취소</button>
+            </div>
+        </form>
+
+        <div id="consoles-grid"></div>
+    </section>
+
+    <!-- Quick Backup -->
+    <section>
+        <div class="section-header">즉시 백업</div>
+        <div class="section-body">
+            <div class="backup-row">
+                <select id="backup-console-select">
+                    <option value="">콘솔 선택...</option>
+                </select>
+                <button class="btn primary" onclick="triggerBackup('scene')">Scene 백업</button>
+                <button class="btn"         onclick="triggerBackup('show')">Show 백업</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Schedules -->
+    <section>
+        <div class="section-header">
+            <span>스케줄 관리</span>
+            <button class="btn small" onclick="toggleScheduleForm()">+ 추가</button>
+        </div>
+
+        <form id="schedule-form" class="inline-form" onsubmit="submitSchedule(event)">
+            <input type="hidden" id="sf-id">
+            <div class="form-field">
+                <label>이름</label>
+                <input type="text" id="sf-name" placeholder="Daily Backup" required style="width:140px">
+            </div>
+            <div class="form-field">
+                <label>콘솔</label>
+                <select id="sf-console" required style="min-width:140px"></select>
+            </div>
+            <div class="form-field">
+                <label>타입</label>
+                <select id="sf-type">
+                    <option value="scene">Scene</option>
+                    <option value="show">Show</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <label>Cron</label>
+                <input type="text" id="sf-cron" placeholder="0 2 * * *" required style="width:130px">
+            </div>
+            <div class="form-field" style="flex-direction:row; align-items:center; gap:8px; padding-bottom:2px;">
+                <input type="checkbox" id="sf-enabled" checked>
+                <label for="sf-enabled" style="text-transform:none; font-size:13px;">활성화</label>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn primary small">저장</button>
+                <button type="button" class="btn small" onclick="cancelScheduleForm()">취소</button>
+            </div>
+        </form>
+
+        <div id="schedules-wrap">
+            <p class="empty-msg" id="empty-schedules" style="display:none">스케줄이 없습니다.</p>
+            <table id="schedules-table" style="display:none">
+                <thead>
+                    <tr>
+                        <th>이름</th>
+                        <th>콘솔</th>
+                        <th>타입</th>
+                        <th>Cron</th>
+                        <th>상태</th>
+                        <th>작업</th>
+                    </tr>
+                </thead>
+                <tbody id="schedules-body"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Live Logs -->
+    <section>
+        <div class="section-header">
+            <span>실시간 로그</span>
+            <button class="btn small" onclick="clearLogs()">지우기</button>
+        </div>
+        <div id="log-container"></div>
+    </section>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

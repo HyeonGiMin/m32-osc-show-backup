@@ -1,0 +1,36 @@
+{
+  "web": {
+    "port": 3000
+  },
+  "logging": {
+    "level": "info"
+  },
+  "sceneBackup": {
+    "slotRange": {
+      "start": 80,
+      "end": 99
+    }
+  },
+  "showBackup": {
+    "prefix": "auto_web_",
+    "maxShows": 10
+  },
+  "consoles": [
+    {
+      "id": "main-stage",
+      "name": "Main Stage",
+      "ip": "192.168.0.2",
+      "port": 10023
+    }
+  ],
+  "schedules": [
+    {
+      "id": "daily-scene-backup",
+      "name": "Daily Scene Backup",
+      "type": "scene",
+      "consoleId": "main-stage",
+      "enabled": true,
+      "cron": "0 2 * * *"
+    }
+  ]
+}
