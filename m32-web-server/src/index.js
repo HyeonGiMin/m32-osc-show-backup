@@ -28,10 +28,10 @@ async function main() {
     const consoleManager = new ConsoleManager(config);
     await consoleManager.init();
 
-    async function performBackup(type, consoleId) {
+    async function performBackup(type, consoleId, options = {}) {
         const client = consoleManager.getClient(consoleId);
         if (!client) throw new Error(`Console not found: ${consoleId}`);
-        if (type === 'scene') return backupScene(client, config, consoleId);
+        if (type === 'scene') return backupScene(client, config, consoleId, options);
         if (type === 'show')  return backupShow(client, config, consoleId);
         throw new Error(`Unknown backup type: ${type}`);
     }
@@ -53,6 +53,8 @@ async function main() {
     app.use('/api/backup',    require('./routes/backup'));
     app.use('/api/schedules', require('./routes/schedules'));
     app.use('/api/logs',      require('./routes/logs'));
+    app.use('/api/config',       require('./routes/config'));
+    app.use('/api/console-data', require('./routes/console-data'));
 
     const webPort = config.web?.port || 3000;
     app.listen(webPort, () => {

@@ -79,13 +79,12 @@ function populateConsoleSelects() {
     scheduleSel.innerHTML = '';
 
     for (const c of _consoles) {
-        const opt1 = new Option(`${c.name} (${c.ip})`, c.id);
-        const opt2 = new Option(`${c.name} (${c.ip})`, c.id);
-        backupSel.appendChild(opt1);
-        scheduleSel.appendChild(opt2);
+        const label = `${c.name} (${c.ip})`;
+        backupSel.appendChild(new Option(label, c.id));
+        scheduleSel.appendChild(new Option(label, c.id));
     }
 
-    if (prevBackup)   backupSel.value   = prevBackup;
+    if (prevBackup)   { backupSel.value = prevBackup; loadSlotPicker(prevBackup); }
     if (prevSchedule) scheduleSel.value = prevSchedule;
 }
 
@@ -174,24 +173,147 @@ async function refreshStatus() {
     }
 }
 
-setInterval(refreshStatus, 15000);
+// ── Polling ───────────────────────────────────────────────────────────────────
+
+let _pollingTimer = null;
+
+function startPolling(seconds) {
+    if (_pollingTimer) clearInterval(_pollingTimer);
+    _pollingTimer = null;
+    if (seconds > 0) {
+        _pollingTimer = setInterval(refreshStatus, seconds * 1000);
+    }
+}
 
 // ── Quick Backup ─────────────────────────────────────────────────────────────
 
+async function onBackupConsoleChange() {
+    const consoleId = document.getElementById('backup-console-select').value;
+    await loadSlotPicker(consoleId);
+}
+
+async function loadSlotPicker(consoleId) {
+    const empty = document.getElementById('slot-picker-empty');
+    const table = document.getElementById('slot-picker-table');
+    const tbody = document.getElementById('slot-picker-body');
+
+    if (!consoleId) {
+        empty.textContent = '콘솔을 선택하면 씬 슬롯이 표시됩니다.';
+        empty.style.display = 'block';
+        table.style.display = 'none';
+        return;
+    }
+
+    try {
+        const status = await api('GET', `/api/status/${consoleId}`);
+        const { sceneIndex, schedules: schInfo = [] } = status;
+        const rawSlots = sceneIndex?.slots || {};
+        const slots = Object.fromEntries(
+            Object.entries(rawSlots).map(([k, v]) => [k, typeof v === 'string' ? { time: v } : v])
+        );
+
+        // slot -> [{ name, color }] 매핑
+        const nextMap = {};
+        for (const sch of schInfo) {
+            if (!nextMap[sch.nextSlot]) nextMap[sch.nextSlot] = [];
+            nextMap[sch.nextSlot].push(sch);
+        }
+
+        empty.style.display = 'none';
+        table.style.display = 'table';
+        tbody.innerHTML = '';
+
+        for (let s = 0; s <= 99; s++) {
+            const info    = slots[String(s)] || null;
+            const nexts   = nextMap[s] || [];
+            const timeStr = info?.time ? new Date(info.time).toLocaleString() : null;
+            const nameStr = info?.name || null;
+
+            const nextBadges = nexts.map(sch =>
+                `<span class="badge next-badge" style="background:${esc(sch.color)}22;color:${esc(sch.color)};border:1px solid ${esc(sch.color)}66" title="${esc(sch.name)}">다음</span>`
+            ).join('');
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><code>Slot ${s}</code>${nextBadges ? ' ' + nextBadges : ''}</td>
+                <td>${nameStr ? esc(nameStr) : '<span style="color:var(--muted)">-</span>'}</td>
+                <td>${timeStr ? esc(timeStr) : '<span style="color:var(--muted)">비어있음</span>'}</td>
+                <td style="display:flex; gap:8px; align-items:center;">
+                    <button class="btn small primary" onclick="openBackupModal('${esc(consoleId)}', ${s}, ${!!info})">Backup</button>
+                    ${info ? `<button class="btn small restore" onclick="triggerRestore('${esc(consoleId)}', ${s})">Restore</button>` : ''}
+                </td>
+            `;
+            tbody.appendChild(tr);
+        }
+    } catch (e) {
+        showToast('슬롯 목록 로드 실패', 'err');
+    }
+}
+
+let _pendingBackup = null;
+
+function openBackupModal(consoleId, slot, hasExisting) {
+    _pendingBackup = { consoleId, slot, hasExisting };
+    document.getElementById('bm-slot-label').textContent = `Slot ${slot}`;
+    document.getElementById('bm-name').value = '';
+    document.getElementById('bm-desc').value = '';
+    document.getElementById('backup-modal').style.display = 'flex';
+    document.getElementById('bm-name').focus();
+}
+
+function closeBackupModal() {
+    _pendingBackup = null;
+    document.getElementById('backup-modal').style.display = 'none';
+}
+
+function onModalOverlayClick(e) {
+    if (e.target === document.getElementById('backup-modal')) closeBackupModal();
+}
+
+async function confirmBackup() {
+    if (!_pendingBackup) return;
+    const { consoleId, slot, hasExisting } = _pendingBackup;
+    const name = document.getElementById('bm-name').value.trim();
+    const desc = document.getElementById('bm-desc').value.trim();
+
+    if (hasExisting && !confirm(`⚠️ Slot ${slot}에 이미 백업이 있습니다.\n덮어쓰시겠습니까?`)) return;
+
+    closeBackupModal();
+    try {
+        await api('POST', '/api/backup/scene', { consoleId, slot, name, desc });
+        showToast(`Slot ${slot} 백업 완료`, 'ok');
+        loadSlotPicker(consoleId);
+        refreshStatus();
+    } catch (err) {
+        showToast(`백업 실패: ${err.message}`, 'err');
+    }
+}
+
+// Show 백업 (콘솔 선택 셀렉트 공유)
 async function triggerBackup(type) {
     const consoleId = document.getElementById('backup-console-select').value;
     if (!consoleId) { showToast('콘솔을 먼저 선택하세요', 'err'); return; }
 
     try {
         const res = await api('POST', `/api/backup/${type}`, { consoleId });
-        if (type === 'scene') {
-            showToast(`Scene 백업 완료 (slot ${res.slot})`, 'ok');
-        } else {
-            showToast(`Show 백업 완료: ${res.name}`, 'ok');
-        }
+        showToast(`Show 백업 완료: ${res.name}`, 'ok');
         refreshStatus();
     } catch (err) {
         showToast(`백업 실패: ${err.message}`, 'err');
+    }
+}
+
+// ── Scene Restore ─────────────────────────────────────────────────────────────
+
+async function triggerRestore(consoleId, slot) {
+    if (!confirm(`⚠️ Slot ${slot}의 씬을 복구하시겠습니까?\n\n콘솔의 현재 상태가 즉시 변경됩니다.\n라이브 공연 중에는 절대 사용하지 마세요.`)) return;
+
+    try {
+        await api('POST', '/api/backup/scene/restore', { consoleId, slot });
+        showToast(`Slot ${slot} 복구 완료`, 'ok');
+        loadSceneList();
+    } catch (err) {
+        showToast(`복구 실패: ${err.message}`, 'err');
     }
 }
 
@@ -224,10 +346,13 @@ function renderSchedules(schedules) {
 
     for (const s of schedules) {
         const tr = document.createElement('tr');
+        const rangeText = s.slotRange ? `${s.slotRange.start}~${s.slotRange.end}` : '기본값';
+        const color = s.color || '#4a9eff';
         tr.innerHTML = `
+            <td><span class="sched-color-dot" style="background:${esc(color)}"></span></td>
             <td>${esc(s.name)}</td>
             <td>${esc(consoleName(s.consoleId))}</td>
-            <td><span class="badge ${s.type}">${s.type}</span></td>
+            <td><code>${esc(rangeText)}</code></td>
             <td><code>${esc(s.cron)}</code></td>
             <td><span class="badge ${s.enabled ? 'active' : 'inactive'}">${s.enabled ? '활성' : '비활성'}</span></td>
             <td class="actions">
@@ -250,11 +375,13 @@ function toggleScheduleForm(open) {
 function cancelScheduleForm() { toggleScheduleForm(false); }
 
 function clearScheduleForm() {
-    document.getElementById('sf-id').value      = '';
-    document.getElementById('sf-name').value    = '';
-    document.getElementById('sf-type').value    = 'scene';
-    document.getElementById('sf-cron').value    = '';
-    document.getElementById('sf-enabled').checked = true;
+    document.getElementById('sf-id').value         = '';
+    document.getElementById('sf-name').value       = '';
+    document.getElementById('sf-color').value      = '#4a9eff';
+    document.getElementById('sf-cron').value       = '';
+    document.getElementById('sf-slot-start').value = '';
+    document.getElementById('sf-slot-end').value   = '';
+    document.getElementById('sf-enabled').checked  = true;
     if (_consoles.length) document.getElementById('sf-console').value = _consoles[0].id;
 }
 
@@ -262,24 +389,31 @@ async function editSchedule(id) {
     const schedules = await api('GET', '/api/schedules');
     const s = schedules.find(x => x.id === id);
     if (!s) return;
-    document.getElementById('sf-id').value        = s.id;
-    document.getElementById('sf-name').value      = s.name;
-    document.getElementById('sf-console').value   = s.consoleId;
-    document.getElementById('sf-type').value      = s.type;
-    document.getElementById('sf-cron').value      = s.cron;
-    document.getElementById('sf-enabled').checked = s.enabled;
+    document.getElementById('sf-id').value         = s.id;
+    document.getElementById('sf-name').value       = s.name;
+    document.getElementById('sf-color').value      = s.color || '#4a9eff';
+    document.getElementById('sf-console').value    = s.consoleId;
+    document.getElementById('sf-cron').value       = s.cron;
+    document.getElementById('sf-slot-start').value = s.slotRange?.start ?? '';
+    document.getElementById('sf-slot-end').value   = s.slotRange?.end   ?? '';
+    document.getElementById('sf-enabled').checked  = s.enabled;
     toggleScheduleForm(true);
 }
 
 async function submitSchedule(e) {
     e.preventDefault();
-    const id   = document.getElementById('sf-id').value;
+    const id       = document.getElementById('sf-id').value;
+    const slotStart = parseInt(document.getElementById('sf-slot-start').value, 10);
+    const slotEnd   = parseInt(document.getElementById('sf-slot-end').value, 10);
     const body = {
         name:      document.getElementById('sf-name').value.trim(),
         consoleId: document.getElementById('sf-console').value,
-        type:      document.getElementById('sf-type').value,
+        color:     document.getElementById('sf-color').value,
         cron:      document.getElementById('sf-cron').value.trim(),
         enabled:   document.getElementById('sf-enabled').checked,
+        ...(!isNaN(slotStart) && !isNaN(slotEnd)
+            ? { slotRange: { start: slotStart, end: slotEnd } }
+            : {}),
     };
 
     try {
@@ -380,9 +514,66 @@ function showToast(msg, type = '') {
     setTimeout(() => toast.remove(), 3000);
 }
 
+
+// ── Settings ──────────────────────────────────────────────────────────────────
+
+const POLLING_LS_KEY = 'm32_polling_interval';
+const POLLING_DEFAULT = 60;
+
+async function initSettings() {
+    // Priority: localStorage → server config → default
+    const local = localStorage.getItem(POLLING_LS_KEY);
+    if (local !== null) {
+        applyPollingInterval(parseInt(local, 10));
+        return;
+    }
+    try {
+        const data = await api('GET', '/api/config/ui');
+        applyPollingInterval(data.pollingInterval ?? POLLING_DEFAULT);
+    } catch {
+        applyPollingInterval(POLLING_DEFAULT);
+    }
+}
+
+function applyPollingInterval(seconds) {
+    const sel = document.getElementById('polling-interval-select');
+    // Select matching option, or closest if custom
+    const match = [...sel.options].find(o => parseInt(o.value) === seconds);
+    sel.value = match ? String(seconds) : String(POLLING_DEFAULT);
+    startPolling(seconds);
+}
+
+async function saveSettings() {
+    const seconds = parseInt(document.getElementById('polling-interval-select').value, 10);
+    const location = document.getElementById('settings-save-location').value;
+    const status = document.getElementById('settings-status');
+
+    startPolling(seconds);
+
+    try {
+        if (location === 'server') {
+            await api('PUT', '/api/config/ui', { pollingInterval: seconds });
+            localStorage.removeItem(POLLING_LS_KEY);
+            status.textContent = '서버 config.json에 저장됨';
+        } else {
+            localStorage.setItem(POLLING_LS_KEY, String(seconds));
+            status.textContent = '브라우저에 저장됨';
+        }
+        status.className = 'settings-status ok';
+        showToast('설정 저장 완료', 'ok');
+    } catch (err) {
+        status.textContent = `저장 실패: ${err.message}`;
+        status.className = 'settings-status err';
+        showToast(`저장 실패: ${err.message}`, 'err');
+    }
+
+    setTimeout(() => { status.textContent = ''; status.className = 'settings-status'; }, 4000);
+}
+
 // ── Init ─────────────────────────────────────────────────────────────────────
 
 (async () => {
+    await initSettings();
     await loadConsoles();   // loads consoles → populates selects → triggers refreshStatus
     await loadSchedules();
 })();

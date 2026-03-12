@@ -17,20 +17,25 @@
   },
   "consoles": [
     {
-      "id": "main-stage",
-      "name": "Main Stage",
-      "ip": "192.168.0.2",
+      "id": "5d43dc06-8468-4c16-8b9e-8d4cf6f76926",
+      "name": "x32",
+      "ip": "192.168.0.96",
       "port": 10023
     }
   ],
   "schedules": [
     {
-      "id": "daily-scene-backup",
-      "name": "Daily Scene Backup",
+      "id": "a69cb99d-fbc8-4ba0-83ea-dc8977f16dc6",
+      "name": "Test1213",
       "type": "scene",
-      "consoleId": "main-stage",
+      "consoleId": "5d43dc06-8468-4c16-8b9e-8d4cf6f76926",
       "enabled": true,
-      "cron": "0 2 * * *"
+      "cron": "0 2 * * *",
+      "color": "#4a9eff",
+      "slotRange": {
+        "start": 90,
+        "end": 99
+      }
     }
   ]
 }

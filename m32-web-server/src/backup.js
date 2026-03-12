@@ -17,7 +17,7 @@ function loadSceneIndex(consoleId) {
     try {
         return JSON.parse(fs.readFileSync(dataPaths(consoleId).sceneIndex, 'utf8'));
     } catch (e) {
-        return { currentSlot: 80, lastSlot: null, lastBackup: null };
+        return { currentSlot: 80, lastSlot: null, lastBackup: null, slots: {} };
     }
 }
 
@@ -30,23 +30,63 @@ function nextSlot(current, range) {
     return next > range.end ? range.start : next;
 }
 
-async function backupScene(oscClient, config, consoleId) {
-    if (!oscClient.isReady) throw new Error('OSC client is not ready');
+// options.specificSlot : 지정 슬롯에 백업 (로테이션 포지션 유지)
+// options.slotRange    : 스케줄별 슬롯 범위 오버라이드 { start, end }
+// options.scheduleId   : 스케줄 ID (per-schedule currentSlot 추적)
+async function backupScene(oscClient, config, consoleId, options = {}) {
+    if (!oscClient.online) throw new Error('Console is offline');
 
+    const slotRange = options.slotRange || config.sceneBackup.slotRange;
     const sceneIndex = loadSceneIndex(consoleId);
-    const slot = sceneIndex.currentSlot ?? config.sceneBackup.slotRange.start;
+    const scheduleStates = { ...(sceneIndex.scheduleStates || {}) };
+
+    let slot;
+    if (options.specificSlot !== undefined) {
+        slot = options.specificSlot;
+    } else if (options.scheduleId) {
+        const state = scheduleStates[options.scheduleId] || {};
+        slot = state.currentSlot ?? slotRange.start;
+        if (slot < slotRange.start || slot > slotRange.end) slot = slotRange.start;
+    } else {
+        slot = sceneIndex.currentSlot ?? slotRange.start;
+        if (slot < slotRange.start || slot > slotRange.end) slot = slotRange.start;
+    }
 
     await oscClient.saveScene(slot);
 
-    const next = nextSlot(slot, config.sceneBackup.slotRange);
-    saveSceneIndex(consoleId, { currentSlot: next, lastSlot: slot, lastBackup: new Date().toISOString() });
+    const slotEntry = { time: new Date().toISOString() };
+    if (options.name) slotEntry.name = options.name;
+    if (options.desc) slotEntry.desc = options.desc;
+    const slots = { ...(sceneIndex.slots || {}), [String(slot)]: slotEntry };
 
-    logger.info({ consoleId, slot, nextSlot: next }, 'Scene backup completed');
-    return { consoleId, slot, nextSlot: next };
+    // 로테이션 포인터 전진 (specificSlot 이면 포인터 불변)
+    let newCurrentSlot = sceneIndex.currentSlot ?? slotRange.start;
+    let newLastSlot    = sceneIndex.lastSlot ?? null;
+
+    if (options.specificSlot === undefined) {
+        const next = nextSlot(slot, slotRange);
+        if (options.scheduleId) {
+            scheduleStates[options.scheduleId] = { currentSlot: next, lastSlot: slot };
+        } else {
+            newCurrentSlot = next;
+            newLastSlot    = slot;
+        }
+    }
+
+    saveSceneIndex(consoleId, {
+        currentSlot: newCurrentSlot,
+        lastSlot:    newLastSlot,
+        lastBackup:  new Date().toISOString(),
+        slots,
+        scheduleStates,
+    });
+
+    logger.info({ consoleId, slot }, 'Scene backup completed');
+    return { consoleId, slot };
 }
 
 async function backupShow(oscClient, config, consoleId) {
-    if (!oscClient.isReady) throw new Error('OSC client is not ready');
+    if (!oscClient.online) throw new Error('Console is offline');
 
     const prefix   = config.showBackup?.prefix   || 'auto_web_';
     const maxShows = config.showBackup?.maxShows  || 10;
@@ -71,4 +111,20 @@ async function backupShow(oscClient, config, consoleId) {
     return { consoleId, name, totalShows: shows.length };
 }
 
-module.exports = { backupScene, backupShow, loadSceneIndex };
+async function restoreScene(oscClient, slot, consoleId) {
+    if (!oscClient.online) throw new Error('Console is offline');
+    logger.info({ consoleId, slot }, 'Restoring scene from slot');
+    await oscClient.loadScene(slot);
+    logger.info({ consoleId, slot }, 'Scene restore completed');
+    return { consoleId, slot };
+}
+
+function loadShows(consoleId) {
+    try {
+        return JSON.parse(fs.readFileSync(dataPaths(consoleId).shows, 'utf8'));
+    } catch (e) {
+        return [];
+    }
+}
+
+module.exports = { backupScene, backupShow, restoreScene, loadSceneIndex, loadShows };

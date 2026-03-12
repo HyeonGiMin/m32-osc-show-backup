@@ -44,19 +44,50 @@
         <div id="consoles-grid"></div>
     </section>
 
-    <!-- Quick Backup -->
+    <!-- Scene Slot Management -->
     <section>
-        <div class="section-header">즉시 백업</div>
+        <div class="section-header">씬 슬롯 관리</div>
         <div class="section-body">
             <div class="backup-row">
-                <select id="backup-console-select">
+                <select id="backup-console-select" onchange="onBackupConsoleChange()">
                     <option value="">콘솔 선택...</option>
                 </select>
-                <button class="btn primary" onclick="triggerBackup('scene')">Scene 백업</button>
-                <button class="btn"         onclick="triggerBackup('show')">Show 백업</button>
             </div>
         </div>
+        <div id="slot-picker-wrap">
+            <p class="empty-msg" id="slot-picker-empty">콘솔을 선택하면 씬 슬롯이 표시됩니다.</p>
+            <table id="slot-picker-table" style="display:none">
+                <thead>
+                    <tr>
+                        <th>슬롯</th>
+                        <th>이름</th>
+                        <th>마지막 백업</th>
+                        <th>작업</th>
+                    </tr>
+                </thead>
+                <tbody id="slot-picker-body"></tbody>
+            </table>
+        </div>
     </section>
+
+    <!-- Backup Modal -->
+    <div id="backup-modal" class="modal-overlay" style="display:none" onclick="onModalOverlayClick(event)">
+        <div class="modal">
+            <div class="modal-title">씬 백업 — <span id="bm-slot-label"></span></div>
+            <div class="form-field">
+                <label>이름</label>
+                <input type="text" id="bm-name" placeholder="예: 1부 예배 세팅" style="width:100%">
+            </div>
+            <div class="form-field" style="margin-top:8px">
+                <label>설명</label>
+                <input type="text" id="bm-desc" placeholder="선택 입력" style="width:100%">
+            </div>
+            <div class="form-actions" style="margin-top:12px">
+                <button class="btn primary small" onclick="confirmBackup()">백업</button>
+                <button class="btn small" onclick="closeBackupModal()">취소</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Schedules -->
     <section>
@@ -76,11 +107,16 @@
                 <select id="sf-console" required style="min-width:140px"></select>
             </div>
             <div class="form-field">
-                <label>타입</label>
-                <select id="sf-type">
-                    <option value="scene">Scene</option>
-                    <option value="show">Show</option>
-                </select>
+                <label>색상</label>
+                <input type="color" id="sf-color" value="#4a9eff" style="width:48px; height:32px; padding:2px 4px; cursor:pointer;">
+            </div>
+            <div class="form-field" id="sf-slotrange-wrap">
+                <label>슬롯 범위</label>
+                <div style="display:flex; gap:6px; align-items:center;">
+                    <input type="number" id="sf-slot-start" placeholder="기본" min="0" max="99" style="width:64px">
+                    <span style="color:var(--muted); font-size:12px;">~</span>
+                    <input type="number" id="sf-slot-end" placeholder="기본" min="0" max="99" style="width:64px">
+                </div>
             </div>
             <div class="form-field">
                 <label>Cron</label>
@@ -101,9 +137,10 @@
             <table id="schedules-table" style="display:none">
                 <thead>
                     <tr>
+                        <th>색상</th>
                         <th>이름</th>
                         <th>콘솔</th>
-                        <th>타입</th>
+                        <th>슬롯 범위</th>
                         <th>Cron</th>
                         <th>상태</th>
                         <th>작업</th>
@@ -111,6 +148,39 @@
                 </thead>
                 <tbody id="schedules-body"></tbody>
             </table>
+        </div>
+    </section>
+
+    <!-- Settings -->
+    <section>
+        <div class="section-header">설정</div>
+        <div class="section-body">
+            <div class="settings-row">
+                <div class="form-field">
+                    <label>상태 확인 주기</label>
+                    <select id="polling-interval-select">
+                        <option value="10">10초</option>
+                        <option value="30">30초</option>
+                        <option value="60">1분 (기본)</option>
+                        <option value="120">2분</option>
+                        <option value="300">5분</option>
+                        <option value="600">10분</option>
+                        <option value="1800">30분</option>
+                        <option value="0">사용 안함</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label>저장 위치</label>
+                    <select id="settings-save-location">
+                        <option value="local">이 브라우저 (localStorage)</option>
+                        <option value="server">서버 기본값 (config.json)</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button class="btn primary small" onclick="saveSettings()">저장</button>
+                </div>
+            </div>
+            <p id="settings-status" class="settings-status"></p>
         </div>
     </section>
 

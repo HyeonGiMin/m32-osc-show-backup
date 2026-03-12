@@ -29,7 +29,11 @@ class Scheduler {
         const task = cron.schedule(schedule.cron, async () => {
             logger.info({ name: schedule.name, consoleId: schedule.consoleId }, 'Scheduled backup triggered');
             try {
-                await this.performBackup(schedule.type || 'scene', schedule.consoleId);
+                const options = {
+                    scheduleId: schedule.id,
+                    ...(schedule.slotRange ? { slotRange: schedule.slotRange } : {}),
+                };
+                await this.performBackup('scene', schedule.consoleId, options);
             } catch (err) {
                 logger.error({ err: err.message, name: schedule.name }, 'Scheduled backup failed');
             }
@@ -58,10 +62,12 @@ class Scheduler {
         const schedule = {
             id:        uuidv4(),
             name:      data.name,
-            type:      data.type || 'scene',
+            type:      'scene',
             consoleId: data.consoleId,
             enabled:   data.enabled !== false,
             cron:      data.cron,
+            color:     data.color || '#4a9eff',
+            ...(data.slotRange ? { slotRange: data.slotRange } : {}),
         };
 
         this.config.schedules.push(schedule);
