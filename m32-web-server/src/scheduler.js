@@ -53,18 +53,41 @@ class Scheduler {
         return this.config.schedules;
     }
 
+    _slotRangesOverlap(a, b) {
+        const aStart = a?.start ?? 0;
+        const aEnd   = a?.end   ?? 99;
+        const bStart = b?.start ?? 0;
+        const bEnd   = b?.end   ?? 99;
+        return aStart <= bEnd && bStart <= aEnd;
+    }
+
+    _findConflict(consoleId, slotRange, excludeId = null) {
+        return this.config.schedules.find(s =>
+            s.enabled &&
+            s.consoleId === consoleId &&
+            s.id !== excludeId &&
+            this._slotRangesOverlap(s.slotRange, slotRange)
+        ) || null;
+    }
+
     addSchedule(data, consoleIds) {
         if (!data.name || !data.cron)      throw new Error('name and cron are required');
         if (!data.consoleId)               throw new Error('consoleId is required');
         if (!cron.validate(data.cron))     throw new Error(`Invalid cron expression: ${data.cron}`);
         if (!consoleIds.includes(data.consoleId)) throw new Error(`Unknown consoleId: ${data.consoleId}`);
 
+        const enabled = data.enabled !== false;
+        if (enabled) {
+            const conflict = this._findConflict(data.consoleId, data.slotRange);
+            if (conflict) throw new Error(`Active schedule with overlapping slot range already exists: "${conflict.name}"`);
+        }
+
         const schedule = {
             id:        uuidv4(),
             name:      data.name,
             type:      'scene',
             consoleId: data.consoleId,
-            enabled:   data.enabled !== false,
+            enabled,
             cron:      data.cron,
             color:     data.color || '#4a9eff',
             ...(data.slotRange ? { slotRange: data.slotRange } : {}),
@@ -82,12 +105,17 @@ class Scheduler {
         if (data.cron && !cron.validate(data.cron)) throw new Error(`Invalid cron expression: ${data.cron}`);
         if (data.consoleId && !consoleIds.includes(data.consoleId)) throw new Error(`Unknown consoleId: ${data.consoleId}`);
 
+        const merged = { ...this.config.schedules[idx], ...data, id };
+        if (merged.enabled) {
+            const conflict = this._findConflict(merged.consoleId, merged.slotRange, id);
+            if (conflict) throw new Error(`Active schedule with overlapping slot range already exists: "${conflict.name}"`);
+        }
+
         this._stopJob(id);
-        const schedule = { ...this.config.schedules[idx], ...data, id };
-        this.config.schedules[idx] = schedule;
-        if (schedule.enabled) this._startJob(schedule);
+        this.config.schedules[idx] = merged;
+        if (merged.enabled) this._startJob(merged);
         this._persist();
-        return schedule;
+        return merged;
     }
 
     deleteSchedule(id) {
